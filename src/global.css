@@ -1,7 +1,7 @@
 @font-face {
   font-family: 'Inter Variable';
   font-style: normal;
-  font-display: swap;
+  font-display: fallback;
   src: url(https://cdn.jsdelivr.net/fontsource/fonts/inter:vf@latest/latin-wght-normal.woff2)
     format('woff2-variations');
   unicode-range: U+0000-00FF, U+AC00-D7AF, U+0131, U+0152-0153, U+02BB-02BC,

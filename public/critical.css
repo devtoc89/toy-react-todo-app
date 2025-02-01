@@ -1,12 +1,4 @@
-@font-face {
-  font-family: 'Inter Variable';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  src: url(https://cdn.jsdelivr.net/fontsource/fonts/inter:vf@latest/latin-wght-normal.woff2)
-    format('woff2-variations');
-  unicode-range: U+0000-007F, U+AC00-D7AF;
-}
+
 
 :root {
   font-synthesis: none;
