@@ -62,7 +62,7 @@ React와 TypeScript를 기반으로 한 할 일 관리 웹 애플리케이션입
   ├── pages/ # 페이지 컴포넌트
   ├── queries/ # React Query 관련 로직
   ├── stores/ # Zustand 스토어
-  ├── types/ # TypeScript 타입 정의
+  ├── types/ # TypeScript 타입 정의 (MVVM 구조)
   └── utils/ # 유틸리티 함수
 ```
 
