@@ -75,7 +75,7 @@ function TodoAddForm() {
 
   return (
     <form onSubmit={handleSubmit((data) => void onSubmit(data))}>
-      <Stack flexDirection="row" gap={0.25} mb={-1.5} flexWrap="wrap">
+      <Stack flexDirection="row" gap={0.25} mb={-1} flexWrap="wrap">
         <Controller
           name="text"
           control={control}
