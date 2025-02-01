@@ -70,7 +70,7 @@ function TodoListHeader({ columnFlexs }: { columnFlexs: Array<string> }) {
           <ListHeaderColumn>Todo</ListHeaderColumn>
         </Stack>
         <Stack flex={columnFlexs[2]}>
-          <ListHeaderColumn>Date Status</ListHeaderColumn>
+          <ListHeaderColumn>Deadline Status</ListHeaderColumn>
         </Stack>
         <Stack flex={columnFlexs[3]}>
           <ListHeaderColumn>Edit</ListHeaderColumn>
