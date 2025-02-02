@@ -21,7 +21,6 @@ type FormProps = { text: string; deadlineDate: dayjs.Dayjs }
 
 const formControllerSx: SxProps<Theme> = {
   flex: '1 1 10rem',
-  marginBottom: '1.5rem',
   '& .MuiFormHelperText-root': {
     position: 'absolute',
     top: 'calc(100% - 0.25rem)',
@@ -75,7 +74,7 @@ function TodoAddForm() {
 
   return (
     <form onSubmit={handleSubmit((data) => void onSubmit(data))}>
-      <Stack flexDirection="row" gap={0.25} mb={-1} flexWrap="wrap">
+      <Stack flexDirection="row" gap={0.25} rowGap={1.75} flexWrap="wrap">
         <Controller
           name="text"
           control={control}
