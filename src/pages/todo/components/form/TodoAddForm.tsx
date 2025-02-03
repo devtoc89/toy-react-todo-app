@@ -29,8 +29,8 @@ const formControllerSx: SxProps<Theme> = {
 
 function useAdd() {
   const store = useContext(TodoListStateStoreContext)
-  const searchKeyword = store?.((s) => s.getSearchKeyword())
-  const { mutateAsync, isPending } = usePostTodoQuery(searchKeyword ?? '')
+  const getSearchKeyword = store?.((s) => s.getSearchKeyword)
+  const { mutateAsync, isPending } = usePostTodoQuery(getSearchKeyword)
   return { mutateAsync, isPending }
 }
 

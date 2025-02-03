@@ -24,21 +24,21 @@ async function mutationFn(newTodo: ToDoRequest) {
 
 // optimistic하게 추가되는 ToDo에 대한 임시 ID 부여 처리
 
-const temperalIdMaker = (() => {
-  let temperalStartId = -1
+const temporalIdMaker = (() => {
+  let temporalStartId = -1
   return {
-    getNewId: () => temperalStartId--,
-    getCurrentId: () => temperalStartId,
+    getNewId: () => temporalStartId--,
+    getCurrentId: () => temporalStartId,
   }
 })()
 
 // 새로운 TODO에 대한 임시 todo
-function createTemperalTodo(newTodo: ToDoRequest) {
+function createTemporalTodo(newTodo: ToDoRequest) {
   const now = new Date().getTime()
   return {
     ...parseTodoModelToViewModel({
       ...newTodo,
-      id: temperalIdMaker.getNewId(),
+      id: temporalIdMaker.getNewId(),
       createAt: now,
       updateAt: now,
     }),
@@ -47,13 +47,14 @@ function createTemperalTodo(newTodo: ToDoRequest) {
 }
 
 // WARN: 서비스 형태에 따라, optimistic 방식이 다르나, 개인 사용자를 가정하고 작성
-function usePostTodoQuery(searchKeyword: string) {
+function usePostTodoQuery(getSearchKeyword: (() => string) | undefined) {
   const queryClient = useQueryClient()
 
   const context = useMutation({
     mutationFn,
     onMutate: async (newTodo) => {
-      const temperalNewTodo = createTemperalTodo(newTodo)
+      const searchKeyword = getSearchKeyword?.() ?? ''
+      const temporalNewTodo = createTemporalTodo(newTodo)
       await queryClient.cancelQueries({
         queryKey: getTodoListKey(searchKeyword),
       })
@@ -71,7 +72,7 @@ function usePostTodoQuery(searchKeyword: string) {
             pages: [
               {
                 ...old.pages[0],
-                list: [temperalNewTodo.id, ...old.pages[0].list],
+                list: [temporalNewTodo.id, ...old.pages[0].list],
               },
               ...old.pages.slice(1),
             ],
@@ -79,17 +80,19 @@ function usePostTodoQuery(searchKeyword: string) {
       )
       // 임시 새로운 todo 등록
       queryClient.setQueryData(
-        getTodoListItemKey(temperalNewTodo.id),
-        parseTodoModelToViewModel(temperalNewTodo)
+        getTodoListItemKey(temporalNewTodo.id),
+        parseTodoModelToViewModel(temporalNewTodo)
       )
-      return { previousTodos, temperalNewTodo }
+      return { previousTodos, temporalNewTodo, searchKeyword }
     },
     onError: (_err, _variables, context) => {
       // 에러 발생 시, todo 목록 재취득 및 임시 todo 제거
-      queryClient.invalidateQueries({ queryKey: getTodoListKey(searchKeyword) })
       if (context) {
         queryClient.invalidateQueries({
-          queryKey: getTodoListItemKey(context.temperalNewTodo.id),
+          queryKey: getTodoListKey(context.searchKeyword),
+        })
+        queryClient.invalidateQueries({
+          queryKey: getTodoListItemKey(context.temporalNewTodo.id),
         })
       }
     },
@@ -102,33 +105,34 @@ function usePostTodoQuery(searchKeyword: string) {
           }
         : null
 
-      // 새로 생성된 todo를 목록과 아이템으로 등록
-      if (newTodo) {
-        queryClient.setQueryData<UseGetTodoListInfiniteQueryData>(
-          getTodoListKey(searchKeyword),
-          (old) =>
-            old && {
-              ...old,
-              pages: [
-                {
-                  ...old.pages[0],
-                  list: [
-                    newTodo.id, // 새로운 todo 등록
-                    ...old.pages[0].list.filter(
-                      (v) => v !== context?.temperalNewTodo.id // 임시 todo 제거
-                    ),
-                  ],
-                },
-                ...old.pages.slice(1),
-              ],
-            }
-        )
-        queryClient.setQueryData(getTodoListItemKey(newTodo.id), newTodo)
-      }
-      // 임시 todo 제거
       if (context) {
+        // 새로 생성된 todo를 목록과 아이템으로 등록
+        if (newTodo) {
+          queryClient.setQueryData<UseGetTodoListInfiniteQueryData>(
+            getTodoListKey(context.searchKeyword),
+            (old) =>
+              old && {
+                ...old,
+                pages: [
+                  {
+                    ...old.pages[0],
+                    list: [
+                      newTodo.id, // 새로운 todo 등록
+                      ...old.pages[0].list.filter(
+                        (v) => v !== context?.temporalNewTodo.id // 임시 todo 제거
+                      ),
+                    ],
+                  },
+                  ...old.pages.slice(1),
+                ],
+              }
+          )
+          queryClient.setQueryData(getTodoListItemKey(newTodo.id), newTodo)
+        }
+
+        // 임시 todo 제거
         queryClient.removeQueries({
-          queryKey: getTodoListItemKey(context.temperalNewTodo.id),
+          queryKey: getTodoListItemKey(context.temporalNewTodo.id),
           exact: true,
         })
       }
