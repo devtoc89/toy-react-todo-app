@@ -1,11 +1,11 @@
-import Header from '#/components/ui/Header'
 import { AppBar, Stack } from '@mui/material'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import Header from '#/components/ui/Header'
 
 // 컨텐츠 관련 페이지 공통 레이어
 function BaseContentLayer({ children }: { children: ReactNode }) {
   return (
-    <Stack flex={1} height="100vh" width="100vw">
+    <Stack flex={1} height="100dvh" width="100vw">
       <AppBar
         position="sticky"
         color="primary"
